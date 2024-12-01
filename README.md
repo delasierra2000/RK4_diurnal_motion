@@ -7,7 +7,7 @@ This project is divided in two parts:
 
 ## Mathematical part
 
-For more info check: [Uploading Trabajo_final_orbitas.ipynb…]()
+For more info check:
 
 
 
