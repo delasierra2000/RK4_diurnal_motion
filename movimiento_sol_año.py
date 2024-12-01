@@ -126,6 +126,12 @@ x=coordenadas[0]
 y=coordenadas[1]
 z=coordenadas[2]
 
+dec=[]
+for i in range(0,len(x)):
+    dat='δ = '+str('{0:.3f}'.format(round(m.atan(z[i]/np.sqrt(x[i]**2+y[i]**2))*360/(2*np.pi),3)))+'°'
+    dec.append(dat)
+print(dec[:30])
+
 #Añado un contador de tiempo
 start = time()
 
@@ -136,10 +142,12 @@ if not os.path.exists("./animaciones"):
 with writer.saving(fig,"./animaciones/año_movimiento_sol.mp4",250):
     #Creo un bucle en el que en cada ciclo se actualiza la fecha y la posición del sol.
     temporary=ax.text(0, 0, 1.75, 'prueba', color='k',size='medium', bbox=dict(facecolor='none', edgecolor='k', pad=5.0),ha='center')
+    temporary2=ax.text(-1, 1, 1.3, 'prueba', color='k',size='large',bbox=dict(facecolor='w', edgecolor='k', boxstyle='round'))
     for i in indices:
         print(str(indices.index(i)+1)+'/'+str(longitud))
         temp,=ax.plot3D(x[i],y[i],z[i],'o',color='#fbb506')
         temporary.set_text(l_texto[i])
+        temporary2.set_text(dec[i])
         writer.grab_frame()
         temp.remove()
 
