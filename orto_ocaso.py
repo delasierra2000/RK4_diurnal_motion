@@ -189,6 +189,11 @@ z=coordenadas[2]
 
 #Añado un contador de tiempo
 start = time()
+
+#Si no existe la carpeta animaciones, la crea.
+if not os.path.exists("./animaciones"):
+    os.makedirs('animaciones')
+
 with writer.saving(fig,"./animaciones/orto_ocaso.mp4",250):
     #Creo un bucle en el que en cada ciclo se actualiza la fecha y la posición del sol.
     temporary=ax.text(0, 0, 1.75, 'prueba', color='k',size='medium', bbox=dict(facecolor='none', edgecolor='k', pad=5.0),ha='center')

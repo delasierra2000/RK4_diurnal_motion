@@ -70,6 +70,7 @@ for i in range (0,particiones):
     orbit_final.append(np.dot(M_giro,p))
 
 
+
 #Guardamos los datos obtenidos en un archivo llamado: posicionFinal.csv
 text2save=[str(x[0])+','+str(x[1])+','+str(x[2]) for x in orbit_final]
 
