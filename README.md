@@ -12,3 +12,7 @@ For more info check:
 ## Animation
 
 pasdfsdfgs
+
+https://github.com/user-attachments/assets/633c8ddd-c5ed-41d5-a5d9-fdf348f15b58
+
+
