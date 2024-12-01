@@ -87,6 +87,7 @@ file.close()
 
 
 
+
 #coordenadas=(coords(orbit_final))
 
 #ax = plt.axes(projection='3d')
