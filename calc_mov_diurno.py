@@ -87,7 +87,7 @@ file.close()
 
 
 
-#coordenadas=(coords(orbit_final))
+coordenadas=(coords(orbit_final))
 
 #ax = plt.axes(projection='3d')
 #ax.set_aspect("equal")
