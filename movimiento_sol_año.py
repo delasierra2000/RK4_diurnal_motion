@@ -40,12 +40,58 @@ orbit_final=[np.array([float(x[0])]+[float(x[1])]+[float(x[2])]) for x in separa
 #Creo un lista que contiene 3 listas, una para cada componente.
 coordenadas=coords(orbit_final)
 
+#----------------------------------------------------------
+
+x=coordenadas[0]
+y=coordenadas[1]
+z=coordenadas[2]
+
+dec=[]
+for i in range(0,len(x)):
+    dat='δ = '+str('{0:.3f}'.format(round(m.atan(z[i]/np.sqrt(x[i]**2+y[i]**2))*360/(2*np.pi),3)))+'°'
+    dec.append(dat)
+print(dec[:30])
+
+dec2=[]
+for i in range(0,len(x)):
+    dat=m.atan(z[i]/np.sqrt(x[i]**2+y[i]**2))*360/(2*np.pi)
+    dec2.append(dat)
+
+
+
+l_time_años=np.linspace(2023.5,2024.5,len(x))
+
+print(dec2[:30])
+print(l_time_años[:30])
+
+fig2, ax = plt.subplots()
+plt.title('Declinación del Sol a lo largo de un año\n', fontsize = 14, fontweight ='bold') 
+plt.ylim(-35,35)
+ax.set_xlabel('t')
+ax.set_ylabel('δ(°)')
+
+plt.plot(l_time_años,dec2,'-k')
+ax.legend(['δ(°) vs t(año decimal)'])
+minimo=min(dec2)
+maximo=max(dec2)
+print(minimo,maximo)
+linea1=[minimo for i in x]
+linea2=[maximo for i in x]
+plt.plot(l_time_años,linea1, '--r')
+plt.plot(l_time_años,linea2, '--r')
+ax.text(2023.5,-26.5,'δ = -23.44°',va='center')
+ax.text(2023.5,26.5,'δ = 23.44°',va='center')
+plt.show()
+
+#----------------------------------------------------------
+
+
 #Establezco los segundos que queremos que dure la animación y los frames por segundo:
 s=365
 fps=30
 
 #Añado la ruta de ffmpeg.exe, le ponemos nombre y creador al video, y establecemos los fps.
-plt.rcParams['animation.ffmpeg_path'] = 'D:\\Fran\\python\\Astronomía\\ffmpeg-2024-11-28-git-bc991ca048-full_build\\bin\\ffmpeg.exe'
+plt.rcParams['animation.ffmpeg_path'] = 'C:\\Users\\Fran\\Desktop\\Fran\\Programación\\Python\\ffmpeg-2024-11-28-git-bc991ca048-essentials_build\\bin\\ffmpeg.exe'
 metadata=dict(tittle='Movie',artist='Fran')
 writer=FFMpegWriter(fps=30,metadata=metadata)
 
@@ -84,8 +130,8 @@ ax.view_init(8,45,0)
 
 #Represento la esfera unidad (Esfera celeste).
 arg=np.arange(0,2*np.pi,0.001)
-z=np.arange(-1,1,0.001)
-A,Z=np.meshgrid(arg,z)
+z_surf=np.arange(-1,1,0.001)
+A,Z=np.meshgrid(arg,z_surf)
 ax.plot_surface((np.sqrt(1-Z**2))*np.cos(A),(np.sqrt(1-Z**2))*np.sin(A),Z,alpha=0.2,color='#a5f4f3')
 
 #Represento el vector correspondiente al Polo.
@@ -122,15 +168,6 @@ ax.plot3D(0,0,0,'ok')
 
 #Inicio el proceso de animación.
 #Crearé un bucle, en cada bucle se actualizará la gráfica y se guardará.
-x=coordenadas[0]
-y=coordenadas[1]
-z=coordenadas[2]
-
-dec=[]
-for i in range(0,len(x)):
-    dat='δ = '+str('{0:.3f}'.format(round(m.atan(z[i]/np.sqrt(x[i]**2+y[i]**2))*360/(2*np.pi),3)))+'°'
-    dec.append(dat)
-print(dec[:30])
 
 #Añado un contador de tiempo
 start = time()
@@ -143,7 +180,7 @@ with writer.saving(fig,"./animaciones/año_movimiento_sol.mp4",250):
     #Creo un bucle en el que en cada ciclo se actualiza la fecha y la posición del sol.
     temporary=ax.text(0, 0, 1.75, 'prueba', color='k',size='medium', bbox=dict(facecolor='none', edgecolor='k', pad=5.0),ha='center')
     temporary2=ax.text(-1, 1, 1.3, 'prueba', color='k',size='large',bbox=dict(facecolor='w', edgecolor='k', boxstyle='round'))
-    for i in indices:
+    for i in indices[:30]:
         print(str(indices.index(i)+1)+'/'+str(longitud))
         temp,=ax.plot3D(x[i],y[i],z[i],'o',color='#fbb506')
         temporary.set_text(l_texto[i])
