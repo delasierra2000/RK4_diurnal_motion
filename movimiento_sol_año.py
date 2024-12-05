@@ -91,7 +91,7 @@ s=365
 fps=30
 
 #Añado la ruta de ffmpeg.exe, le ponemos nombre y creador al video, y establecemos los fps.
-plt.rcParams['animation.ffmpeg_path'] = 'C:\\Users\\Fran\\Desktop\\Fran\\Programación\\Python\\ffmpeg-2024-11-28-git-bc991ca048-essentials_build\\bin\\ffmpeg.exe'
+plt.rcParams['animation.ffmpeg_path'] = 'D:\\Fran\\python\\Astronomía\\ffmpeg-2024-11-28-git-bc991ca048-full_build\\bin\\ffmpeg.exe'
 metadata=dict(tittle='Movie',artist='Fran')
 writer=FFMpegWriter(fps=30,metadata=metadata)
 
@@ -112,7 +112,7 @@ l_time_actual=[x+start_time for x in l_time]
 l_texto=[datetime.fromtimestamp(x).strftime("%B %d, %Y") for x in l_time_actual]
 
 #Defino el título y todas las modificaciones a la figura (limite de los ejes, escala, etiquetas...)
-plt.title("Movimiento diurno\na lo largo de un año",bbox=dict(facecolor='none', edgecolor='k', pad=5.0),size='x-large')
+plt.title("Diurnal Motion of Sun\nduring a year",bbox=dict(facecolor='none', edgecolor='k', pad=5.0),size='x-large')
 
 ax.set_xlim(-1.25,1.25)
 ax.set_ylim(-1.25,1.25)
@@ -159,9 +159,9 @@ ax.plot3D(x0,y0,z0,'-b',alpha=0.2)
 
 #Añado texto para indicar los nombres de los vectores, y el ecuador.
 ax.text(-0.15, 0.05, 1.15, "P", color='k',size='xx-large')
-ax.text(-0.65, 0.65, z_c+0.15, "  Trópico \nde Cáncer", color='k',size='x-small')
-ax.text(-0.6, 0.6, -z_c-0.27, "      Trópico \nde Capricornio", color='k',size='x-small')
-ax.text(-0.75, 0.75, 0, " Ecuador", color='k',size='x-small')
+ax.text(-0.65, 0.65, z_c+0.15, "  Tropic \nof Cancer", color='k',size='x-small')
+ax.text(-0.6, 0.6, -z_c-0.27, "      Tropic \nof Capricorn", color='k',size='x-small')
+ax.text(-0.75, 0.75, 0, " Ecuator", color='k',size='x-small')
 
 #Represento el origen.
 ax.plot3D(0,0,0,'ok')
@@ -180,7 +180,7 @@ with writer.saving(fig,"./animaciones/año_movimiento_sol.mp4",250):
     #Creo un bucle en el que en cada ciclo se actualiza la fecha y la posición del sol.
     temporary=ax.text(0, 0, 1.75, 'prueba', color='k',size='medium', bbox=dict(facecolor='none', edgecolor='k', pad=5.0),ha='center')
     temporary2=ax.text(-1, 1, 1.3, 'prueba', color='k',size='large',bbox=dict(facecolor='w', edgecolor='k', boxstyle='round'))
-    for i in indices[:30]:
+    for i in indices:
         print(str(indices.index(i)+1)+'/'+str(longitud))
         temp,=ax.plot3D(x[i],y[i],z[i],'o',color='#fbb506')
         temporary.set_text(l_texto[i])

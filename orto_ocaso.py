@@ -7,7 +7,34 @@ from time import time
 from datetime import datetime
 
 
+
+
+
 #Defino las funciones que usaré.
+def año_decimal(str):
+    año=float(str[0:4])
+    mes=float(str[5:7])
+    dia=float(str[8:10])
+
+    if año%400:
+        b=29
+    elif año%100:
+        b=28
+    elif año%4:
+        b=29
+    else:
+        b=28
+
+    duracion_meses=[31,b,31,30,31,30,31,31,30,31,30,31]
+
+    if mes>=2:
+        dp=sum(duracion_meses[0:int(mes-1)])
+    else:
+        dp=0
+    
+    año_dec=año+(dp+dia-1)/(sum(duracion_meses))
+    return  año_dec
+
 def coords(list):
     n=len(list[0])
     sol=[]
@@ -53,7 +80,24 @@ metadata=dict(tittle='Movie',artist='Fran')
 writer=FFMpegWriter(fps=30,metadata=metadata)
 
 #De las posiciones, me quedo con indices equitativamente distribuidos, de tal manera que tengamos tantos indices como frames totales.
-indices=[m.trunc(x) for x in np.linspace(0,len(coordenadas[1][:11520])-1,fps*s)]
+
+date='12-21'
+
+month=int(date[0:2])
+day=int(date[3:5])
+
+if (month==6 and day>=21) or month>6:
+    year=str(2023)
+else:
+    year=str(2024)
+
+f_date=año_decimal(year+'-'+date)
+
+fraction_time=(f_date-año_decimal('2023-06-21'))
+indice2=int(round(len(coordenadas[0])*fraction_time))
+
+
+indices=[m.trunc(x) for x in np.linspace(0+indice2,11520-1+indice2,fps*s)]
 
 #Creo la variable longitud para saber cuantas veces hay que repetir el bucle y añadirlo al contador.
 longitud=len(indices)
@@ -105,12 +149,24 @@ ax.plot3D(x0,y0,z0,'-b',alpha=0.2)
 
 
 #Represento el plano del horizonte, para ello introduzco lambda y phi, y aplico los giros necesarios a la circunferencia del ecuador.
-lamda=np.pi/2+np.pi/5
+
+#Parameters of Zenith.
+phi_rot=50
+lamda_pr=45+90-20
+
+#If automatic_lamda is True, the program will calculate the value of lamda_pr depending on the value of phi_rot for better visualization.
+automatic_lambda=True
+if automatic_lambda:
+    lamda_pr=45+90-20
+    if phi_rot<=-8:
+        lamda_pr=45+90+20
+
+lamda=(lamda_pr*2*np.pi)/360
 Rot_z=np.array([[np.cos(lamda),-np.sin(lamda),0],[np.sin(lamda),np.cos(lamda),0],[0,0,1]])
 
-phi_rot=np.pi/4
-phi=np.pi/2-phi_rot
-Rot_y=np.array([[np.cos(phi),0,np.sin(phi)],[0,1,0],[-np.sin(phi),0,np.cos(phi)]])
+phi=90-phi_rot
+phi_f=(phi*2*np.pi)/360
+Rot_y=np.array([[np.cos(phi_f),0,np.sin(phi_f)],[0,1,0],[-np.sin(phi_f),0,np.cos(phi_f)]])
 
 listas_puntos=vect([x0,y0,z0])
 
@@ -118,7 +174,7 @@ puntos_rotados=[np.dot(Rot_z,np.dot(Rot_y,x)) for x in listas_puntos]
 
 posicion_horizonte=coords(puntos_rotados)
 
-ax.plot3D(posicion_horizonte[0],posicion_horizonte[1],posicion_horizonte[2],'-',color='#1331ee',alpha=0.4)
+ax.plot3D(posicion_horizonte[0],posicion_horizonte[1],posicion_horizonte[2],'-',color='r',alpha=0.4)
 
 #Represento también el vector correspondiente al Zénit.
 punto=np.dot(Rot_z,np.dot(Rot_y,np.array([0,0,1.5])))
@@ -126,50 +182,37 @@ punto=np.dot(Rot_z,np.dot(Rot_y,np.array([0,0,1.5])))
 ax.quiver(-punto[0],-punto[1],-punto[2],2*punto[0],2*punto[1],2*punto[2],color='k',arrow_length_ratio=0.07)
 
 #Calculo los puntos correspondientes al orto y al ocaso y lo represento.
-r=np.cos((23.44*2*np.pi)/360)
-z_c=np.sqrt(1-r**2)
+
+#Date format: 'MM-DD'
 
 
-tita1=m.acos(-z_c/np.sin(phi))
-tita2=-m.acos(-z_c/np.sin(phi))+2*np.pi
+print(indice2)
+ind_sol_x=coordenadas[0][indice2]
+ind_sol_y=coordenadas[1][indice2]
+ind_sol_z=coordenadas[2][indice2]
 
+r=np.sqrt(ind_sol_x**2+ind_sol_y**2)
+z_c=ind_sol_z
 
-temporal_p=np.array([np.cos(tita1),np.sin(tita1),0])
-punto1=np.dot(Rot_z,np.dot(Rot_y,temporal_p))
-ax.plot3D(punto1[0],punto1[1],punto1[2],'ok')
+l_tita=np.linspace(0,2*np.pi,10000)
+sol_x=[r*np.cos(x) for x in l_tita]
+sol_y=[r*np.sin(x) for x in l_tita]
+sol_z=[z_c for x in sol_y]
 
-temporal_p=np.array([np.cos(tita2),np.sin(tita2),0])
-punto2=np.dot(Rot_z,np.dot(Rot_y,temporal_p))
-ax.plot3D(punto2[0],punto2[1],punto2[2],'ok')
+ax.plot3D(sol_x,sol_y,sol_z,'-',color='y',alpha=0.4)
 
-#Calculo la componente angular en coordenadas cilíndricas de orto y el ocaso, para trazar el recorrido del día y la noche.
-punto_origen=np.array([0,0,z_c])
-punto_ref=np.array([r,0,z_c])
+sol_vectP=vect([sol_x ,sol_y ,sol_z])
 
+dia=[x for x in sol_vectP if punto[0]*x[0]+punto[1]*x[1]+punto[2]*x[2]>0]
+noche=[x for x in sol_vectP if punto[0]*x[0]+punto[1]*x[1]+punto[2]*x[2]<=0]
 
-a1=np.linalg.norm(punto_origen-punto_ref)
-b1=np.linalg.norm(punto_origen-punto1)
-c1=np.linalg.norm(punto1-punto_ref)
-angle1=-m.acos((c1**2-a1**2-b1**2)/(-2*a1*b1))+2*np.pi
+if dia:
+    coords_dia=coords(dia)
+    ax.plot3D(coords_dia[0],coords_dia[1],coords_dia[2],'-',color='#ff8000',alpha=0.4)
+if noche:
+    coords_noche=coords(noche)
+    ax.plot3D(coords_noche[0],coords_noche[1],coords_noche[2],'-',color='#0000ff',alpha=0.4)
 
-
-
-a2=np.linalg.norm(punto_origen-punto_ref)
-b2=np.linalg.norm(punto_origen-punto2)
-c2=np.linalg.norm(punto2-punto_ref)
-angle2=m.acos((c2**2-a2**2-b2**2)/(-2*a2*b2))
-
-#Represento los dos tramos de circunferiencia, cada tramo es correspondiente al dia o a la noche.
-tramo1_theta=np.linspace(angle2,angle1,1000)
-tramo2_theta=np.linspace(-(2*np.pi-angle1),angle2,1000)
-x1=[r*np.cos(x) for x in tramo1_theta]
-y1=[r*np.sin(x) for x in tramo1_theta]
-z=[z_c for x in y1]
-x2=[r*np.cos(x) for x in tramo2_theta]
-y2=[r*np.sin(x) for x in tramo2_theta]
-
-ax.plot3D(x1,y1,z,'-',color='#ee13da',alpha=0.4)
-ax.plot3D(x2,y2,z,'-',color='#478712',alpha=0.4)
 
 
 #Represento el origen.
@@ -178,7 +221,7 @@ ax.plot3D(0,0,0,'ok')
 
 #Añado texto para indicar los nombres de los vectores, y el ecuador.
 ax.text(-0.15, 0.05, 1.15, "P", color='k',size='xx-large')
-ax.text(-1.6, 0.05, 0.7, "Z", color='k',size='xx-large')
+ax.text(punto[0], punto[1]+0.2, punto[2], "Z", color='k',size='xx-large')
 ax.text(-0.75, 0.75, 0, " Ecuador", color='k',size='x-small')
 
 #Inicio el proceso de animación.
@@ -197,7 +240,7 @@ if not os.path.exists("./animaciones"):
 with writer.saving(fig,"./animaciones/orto_ocaso.mp4",250):
     #Creo un bucle en el que en cada ciclo se actualiza la fecha y la posición del sol.
     temporary=ax.text(0, 0, 1.75, 'prueba', color='k',size='medium', bbox=dict(facecolor='none', edgecolor='k', pad=5.0),ha='center')
-    for i in indices:
+    for i in indices[:30]:
         print(str(indices.index(i)+1)+'/'+str(longitud))
         temp,=ax.plot3D(x[i],y[i],z[i],'o',color='#fbb506')
         temporary.set_text(l_texto[i])
