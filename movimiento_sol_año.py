@@ -33,33 +33,33 @@ if not os.path.exists(ruta):
     exit()
 
 file=open(ruta,'r')
-lineas=file.readlines()
-separado=[(x.replace('\n','')).split(',') for x in lineas]
-orbit_final=[np.array([float(x[0])]+[float(x[1])]+[float(x[2])]) for x in separado]
+lines=file.readlines()
+splitted=[(x.replace('\n','')).split(',') for x in lines]
+orbit_final=[np.array([float(x[0])]+[float(x[1])]+[float(x[2])]) for x in splitted]
 
 #Creo un lista que contiene 3 listas, una para cada componente.
-coordenadas=coords(orbit_final)
+orbit_coords=coords(orbit_final)
+
+x_orbit=orbit_coords[0]
+y_orbit=orbit_coords[1]
+z_orbit=orbit_coords[2]
+
 
 #----------------------------------------------------------
 
-x=coordenadas[0]
-y=coordenadas[1]
-z=coordenadas[2]
-
 dec=[]
-for i in range(0,len(x)):
-    dat='δ = '+str('{0:.3f}'.format(round(m.atan(z[i]/np.sqrt(x[i]**2+y[i]**2))*360/(2*np.pi),3)))+'°'
+for i in range(0,len(x_orbit)):
+    dat='δ = '+str('{0:.3f}'.format(round(m.atan(z_orbit[i]/np.sqrt(x_orbit[i]**2+y_orbit[i]**2))*360/(2*np.pi),3)))+'°'
     dec.append(dat)
 print(dec[:30])
 
 dec2=[]
-for i in range(0,len(x)):
-    dat=m.atan(z[i]/np.sqrt(x[i]**2+y[i]**2))*360/(2*np.pi)
+for i in range(0,len(x_orbit)):
+    dat=m.atan(z_orbit[i]/np.sqrt(x_orbit[i]**2+y_orbit[i]**2))*360/(2*np.pi)
     dec2.append(dat)
 
 
-
-l_time_años=np.linspace(2023.5,2024.5,len(x))
+l_time_años=np.linspace(2023.5,2024.5,len(x_orbit))
 
 print(dec2[:30])
 print(l_time_años[:30])
@@ -75,8 +75,8 @@ ax.legend(['δ(°) vs t(año decimal)'])
 minimo=min(dec2)
 maximo=max(dec2)
 print(minimo,maximo)
-linea1=[minimo for i in x]
-linea2=[maximo for i in x]
+linea1=[minimo for i in x_orbit]
+linea2=[maximo for i in x_orbit]
 plt.plot(l_time_años,linea1, '--r')
 plt.plot(l_time_años,linea2, '--r')
 ax.text(2023.5,-26.5,'δ = -23.44°',va='center')
@@ -84,7 +84,6 @@ ax.text(2023.5,26.5,'δ = 23.44°',va='center')
 plt.show()
 
 #----------------------------------------------------------
-
 
 #Establezco los segundos que queremos que dure la animación y los frames por segundo:
 s=365
@@ -96,7 +95,7 @@ metadata=dict(tittle='Movie',artist='Fran')
 writer=FFMpegWriter(fps=30,metadata=metadata)
 
 #De las posiciones, me quedo con indices equitativamente distribuidos, de tal manera que tengamos tantos indices como frames totales.
-indices=[m.trunc(x) for x in np.linspace(0,len(coordenadas[1])-1,fps*s)]
+indices=[m.trunc(x) for x in np.linspace(0,len(y_orbit)-1,fps*s)]
 
 #Creo la variable longitud para saber cuantas veces hay que repetir el bucle y añadirlo al contador.
 longitud=len(indices)
@@ -107,7 +106,7 @@ fig, ax = plt.subplots(subplot_kw=dict(projection='3d'))
 #Saco la fecha correspondiente a cada instante, empezando el 21 de Junio.
 dt = datetime(2023, 6, 21, 0, 0)-datetime(1970,1,1)
 start_time=dt.total_seconds()
-l_time=np.linspace(0,365*24*3600,len(coordenadas[1]))
+l_time=np.linspace(0,365*24*3600,len(y_orbit))
 l_time_actual=[x+start_time for x in l_time]
 l_texto=[datetime.fromtimestamp(x).strftime("%B %d, %Y") for x in l_time_actual]
 
@@ -182,7 +181,7 @@ with writer.saving(fig,"./animaciones/año_movimiento_sol.mp4",250):
     temporary2=ax.text(-1, 1, 1.3, 'prueba', color='k',size='large',bbox=dict(facecolor='w', edgecolor='k', boxstyle='round'))
     for i in indices:
         print(str(indices.index(i)+1)+'/'+str(longitud))
-        temp,=ax.plot3D(x[i],y[i],z[i],'o',color='#fbb506')
+        temp,=ax.plot3D(x_orbit[i],y_orbit[i],z_orbit[i],'o',color='#fbb506')
         temporary.set_text(l_texto[i])
         temporary2.set_text(dec[i])
         writer.grab_frame()
