@@ -1,3 +1,7 @@
+
+# $\color{red}{\text{This readme is not complete yet, more updates coming soon.}}$
+
+
 # Animation of the diurnal motion of Sun
 
 This project is divided in two parts:
