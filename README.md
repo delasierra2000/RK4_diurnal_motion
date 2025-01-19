@@ -1,5 +1,5 @@
 
-# $\color{red}{\text{This readme is not complete yet, more updates coming soon.}}$
+# $\color{red}{\text{This README is not complete yet, more updates coming soon.}}$
 
 
 # Animation of the diurnal motion of Sun
