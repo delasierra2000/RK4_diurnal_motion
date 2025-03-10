@@ -90,7 +90,7 @@ s=365
 fps=30
 
 #Añado la ruta de ffmpeg.exe, le ponemos nombre y creador al video, y establecemos los fps.
-plt.rcParams['animation.ffmpeg_path'] = 'D:\\Fran\\python\\Astronomía\\ffmpeg-2024-11-28-git-bc991ca048-full_build\\bin\\ffmpeg.exe'
+plt.rcParams['animation.ffmpeg_path'] = 'C:\\Users\\Astronomia\\Desktop\\Fran\\Programacion\\Herramientas\\ffmpeg-7.1-essentials_build\\bin\\ffmpeg.exe'
 metadata=dict(tittle='Movie',artist='Fran')
 writer=FFMpegWriter(fps=30,metadata=metadata)
 

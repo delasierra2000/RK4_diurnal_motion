@@ -22,7 +22,7 @@ automatic_λ=True
 
 #(WINDOWS) Root of the path where ffmpeg.exe is located.
 #(LINUX) Root of the path where ffmpeg is located. You can find it by typing 'which ffmpeg' in the terminal.
-ffmpeg_root='D:\\Fran\\python\\Astronomía\\ffmpeg-2024-11-28-git-bc991ca048-full_build\\bin\\ffmpeg.exe'
+ffmpeg_root='C:\\Users\\Astronomia\\Desktop\\Fran\\Programacion\\Herramientas\\ffmpeg-7.1-essentials_build\\bin\\ffmpeg.exe'
 
 #Duration of the video in seconds and frames per second.
 s=30
